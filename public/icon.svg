@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Two cassette reels connected by tape">
+  <rect width="64" height="64" rx="8" fill="#F2E9D8"/>
+  <path d="M9 15h46v34H9z" fill="#FFF9EC" stroke="#171612" stroke-width="4"/>
+  <circle cx="23" cy="31" r="8" fill="none" stroke="#B62B24" stroke-width="4"/>
+  <circle cx="43" cy="31" r="8" fill="none" stroke="#155A78" stroke-width="4"/>
+  <path d="M23 39h20M18 49l5-10M48 49l-5-10" fill="none" stroke="#171612" stroke-width="3"/>
+</svg>

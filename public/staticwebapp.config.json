@@ -1,0 +1,10 @@
+{
+  "navigationFallback": { "rewrite": "/index.html", "exclude": ["/assets/*", "/*.svg", "/*.webmanifest", "/*.js"] },
+  "globalHeaders": {
+    "Content-Security-Policy": "default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self' https://pilot-api.sociobot.in https://api.sociobot.in; object-src 'none'; base-uri 'self'; form-action 'self' https://pilot-api.sociobot.in https://api.sociobot.in",
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "mimeTypes": { ".webmanifest": "application/manifest+json" }
+}

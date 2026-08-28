@@ -1,0 +1,10 @@
+{
+  "name": "Edit Sidecar Check",
+  "short_name": "Sidecar Check",
+  "description": "A local-first photo handoff preflight tool.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f2e9d8",
+  "theme_color": "#b62b24",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
