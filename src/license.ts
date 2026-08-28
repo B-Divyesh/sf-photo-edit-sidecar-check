@@ -1,5 +1,8 @@
 const SLUG = 'photo-edit-sidecar-check';
-const API_BASE = 'https://pilot-api.sociobot.in/api/v1';
+// Production builds must use the live billing origin. Test purchases belong to
+// staging builds only; shipping the pilot origin makes the advertised checkout
+// unavailable to real visitors.
+export const BILLING_API_BASE = 'https://api.sociobot.in/api/v1';
 const TOKEN_KEY = `sb_license:${SLUG}`;
 const CACHE_KEY = `sb_license_verdict:${SLUG}`;
 const DAY = 86_400_000;
@@ -26,7 +29,7 @@ function readCache(): CachedVerdict | undefined {
 }
 
 export function checkoutUrl(): string {
-  return `${API_BASE}/products/${SLUG}/checkout`;
+  return `${BILLING_API_BASE}/products/${SLUG}/checkout`;
 }
 
 export function captureReturnedLicense(): void {
@@ -60,7 +63,7 @@ export async function verifyLicense(force = false): Promise<LicenseState> {
     return { unlocked: Boolean(cache?.valid), checking: false, message: cache?.valid ? 'Pro is unlocked from the last check; verification will resume online.' : 'Connect once to verify this license.' };
   }
   try {
-    const response = await fetch(`${API_BASE}/products/${SLUG}/verify?license=${encodeURIComponent(token)}`);
+    const response = await fetch(`${BILLING_API_BASE}/products/${SLUG}/verify?license=${encodeURIComponent(token)}`);
     if (!response.ok) throw new Error('Verification service unavailable');
     const result = await response.json() as { valid?: boolean; reason?: string };
     const verdict = { valid: result.valid === true, reason: result.reason ?? 'invalid', checkedAt: Date.now() };

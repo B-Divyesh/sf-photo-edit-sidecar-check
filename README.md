@@ -29,7 +29,7 @@ npm run build
 
 ## Deploy
 
-Deploy `dist/` as an Azure Static Web App. `public/staticwebapp.config.json` supplies SPA navigation fallback and security headers. The repository contains no infrastructure, secrets, or third-party runtime scripts.
+Deploy `dist/` as an Azure Static Web App. `public/staticwebapp.config.json` supplies SPA navigation fallback, security headers, long-lived immutable caching for hashed `/assets/*`, and revalidation for the app shell and service worker. The repository contains no infrastructure, secrets, or third-party runtime scripts.
 
 ## Privacy and Pro
 

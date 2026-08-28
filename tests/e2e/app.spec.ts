@@ -38,6 +38,27 @@ test('privacy route and 390px layout pass smoke checks', async ({ page }) => {
   expect(results.violations.filter((issue) => ['serious', 'critical'].includes(issue.impact ?? ''))).toEqual([]);
 });
 
+test('uses production billing and keeps a returned license without repeat verification', async ({ page }) => {
+  let verificationRequests = 0;
+  await page.route('https://api.sociobot.in/api/v1/products/photo-edit-sidecar-check/verify?license=returned-license', async (route) => {
+    verificationRequests += 1;
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ valid: true, reason: 'ok', expires_at: null }) });
+  });
+
+  await page.goto('/?license=returned-license');
+  await expect(page.getByRole('link', { name: 'Buy Pro' })).toHaveAttribute('href', 'https://api.sociobot.in/api/v1/products/photo-edit-sidecar-check/checkout');
+  await expect(page.getByText('Pro is unlocked on this browser.')).toBeVisible();
+  expect(await page.evaluate(() => ({
+    token: localStorage.getItem('sb_license:photo-edit-sidecar-check'),
+    query: location.search,
+  }))).toEqual({ token: 'returned-license', query: '' });
+  expect(verificationRequests).toBe(1);
+
+  await page.reload();
+  await expect(page.getByText('Pro is unlocked on this browser.')).toBeVisible();
+  expect(verificationRequests).toBe(1);
+});
+
 test('shows a useful offline state after the first visit', async ({ page, context }) => {
   await page.goto('/');
   await page.evaluate(() => navigator.serviceWorker.ready);
