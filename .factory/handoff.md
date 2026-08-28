@@ -1,14 +1,31 @@
-# Edit Sidecar Check — repair handoff
+# Edit Sidecar Check — verification handoff
 
 ## Verification status: **PASS**
 
-This repair resolves both findings in independent verification report
-`.factory/verification.md` for candidate
-`204136c58babeb279876f32b4c66902cff528923`. Runtime repair commit
-`ba8f232` was pushed to `main` and deployed to
-https://photo-edit-sidecar-check.sociobot.in on 2026-08-28 UTC via the
-factory static deployment configuration (Azure deployment
-`776ddfad-03b6-44ea-8174-f32c4220a813`).
+Independent QA passed candidate
+`3af9e27f92957baef4be51f8f1844a55e3b14be4` at
+https://photo-edit-sidecar-check.sociobot.in on 2026-08-28 UTC. The full
+fresh-evidence record is in `.factory/verification-2.md`.
+
+No product code was changed by the verifier. The live index, JS, CSS, hero,
+worker, manifest, and offline assets match the candidate production build.
+
+## Current verification summary
+
+- Clean `npm ci`, `npm test`, exact TypeScript/Vite production build, and
+  production dependency audit all passed: Vitest 5/5, Playwright 10/10, and
+  audit 0 vulnerabilities.
+- Live normal, risk, invalid-input, recovery, report-download, invalid-license,
+  desktop keyboard, 390 px mobile, reduced-motion, offline PWA, and worker
+  update checks passed without console/page errors.
+- Live axe has 0 serious/critical findings; Lighthouse mobile is Performance
+  99 and Accessibility 100 (LCP 1.7 s, CLS 0).
+- The local-only free flow made same-origin requests only. No analytics,
+  remote font, or third-party script is shipped. Optional license verification
+  sends only a voluntarily supplied token to the documented Sociobot API.
+- The required production checkout endpoint returns HTTP 303 to its hosted
+  Dodo session; fingerprinted assets use one-year immutable caching, while the
+  shell and worker are revalidated.
 
 ## Repairs
 
@@ -73,10 +90,10 @@ Post-deploy checks against the live custom domain:
   invalid-license verification returns the expected HTTP 200 JSON
   `{ "valid": false, "reason": "invalid" }` without storing photo data.
 
-Lighthouse’s current CLI crashed its tab in this container despite working
-Playwright Chromium; this repair does not add runtime work, and the independent
-live baseline recorded Performance **94** and Accessibility **100**. The
-browser and axe checks above were completed against this deployment.
+Fresh independent Lighthouse 12.8.2 verification completed against this
+deployment with the installed Playwright Chromium: Performance **99** and
+Accessibility **100** (LCP 1.7 s, CLS 0). The browser and axe checks above
+were completed against this deployment.
 
 ## Product behavior preserved
 
