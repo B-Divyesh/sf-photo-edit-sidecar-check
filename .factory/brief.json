@@ -1,0 +1,30 @@
+{
+  "slug": "photo-edit-sidecar-check",
+  "title": "Edit Sidecar Check",
+  "territory": "utilities",
+  "user": "Photographers moving edited RAW/DNG files between phone and desktop tools who need to know whether edits, ratings, and tags will survive an export before they lose work.",
+  "evidence": [
+    {
+      "url": "https://photo.stackexchange.com/questions/136408/why-are-my-edits-lost-when-editing-dng-files-with-adobe-lightroom-and-snapseed",
+      "date": "2025-03-26",
+      "quote_or_summary": "A photographer describes a Lightroom Android to Snapseed DNG workflow where the second tool shows the original rather than the edited image."
+    },
+    {
+      "url": "https://github.com/darktable-org/darktable/issues/21413",
+      "date": "2026-06-24",
+      "quote_or_summary": "A Lightroom-to-darktable migrator reports that tags disappear when a previously edited DNG is exported to JPEG."
+    }
+  ],
+  "recurrence": "Independent mobile and desktop workflows reveal the same portability failure across 2025–26: visual edits and descriptive data are not reliably carried forward.",
+  "current_workaround": "Export a flattened JPEG/TIFF, keep several originals, or test each app combination manually and discover losses after a batch.",
+  "incumbents_and_gap": "Lightroom, Snapseed, and darktable edit images, but none acts as a neutral before/after inspector for rendered pixels, XMP, EXIF, and sidecar semantics across handoffs.",
+  "smallest_useful_product": "Local desktop/web checker that compares source plus sidecar/export, reports pixel-bearing edit data versus portable metadata, and produces a handoff checklist. Non-goals: RAW development, cloud sync, or writing proprietary edits.",
+  "success_measure": "At least 80% of beta users correctly predict whether ratings, keywords, capture date, and visible edits survive a tested handoff.",
+  "artifact_class": "static-web",
+  "monetization": "one-time",
+  "constraints": "Local-only file processing; preserve originals; document format-specific limits; do not reverse-engineer or redistribute proprietary editing engines.",
+  "est_build_effort": "M",
+  "why_distinct": "It explains interoperability risk; it does not compete as another photo editor.",
+  "confidence": 5,
+  "state": "RESEARCHED"
+}
