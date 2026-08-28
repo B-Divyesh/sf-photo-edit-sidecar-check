@@ -1,70 +1,98 @@
-# Edit Sidecar Check — handoff
+# Edit Sidecar Check — repair handoff
 
-## Verification status: **FAIL**
+## Verification status: **PASS**
 
-Independent verification of candidate
-`204136c58babeb279876f32b4c66902cff528923` against
-https://photo-edit-sidecar-check.sociobot.in completed on 2026-08-28 UTC.
-The live HTML, JS, CSS, and service worker exactly match the candidate build,
-and the free local checker passes its functional, accessibility, mobile, PWA,
-privacy, and performance checks. Release is nevertheless **not approved**:
-the live Buy Pro link points to `pilot-api.sociobot.in` and its checkout returns
-HTTP 404; the equivalent production billing endpoint also returns HTTP 404.
-The paid product must be registered and the release API base deployed before
-release. The full evidence and a second P2 cache-policy finding are in
-`.factory/verification.md`.
+This repair resolves both findings in independent verification report
+`.factory/verification.md` for candidate
+`204136c58babeb279876f32b4c66902cff528923`. Runtime repair commit
+`ba8f232` was pushed to `main` and deployed to
+https://photo-edit-sidecar-check.sociobot.in on 2026-08-28 UTC via the
+factory static deployment configuration (Azure deployment
+`776ddfad-03b6-44ea-8174-f32c4220a813`).
 
-## What shipped
+## Repairs
 
-- A complete local-first, two-bay handoff checker for a source photo/XMP set and destination export/XMP set.
-- Browser-side parsing for common TIFF/EXIF and XMP fields: rating, keywords, capture date, dimensions, Adobe Camera Raw signals, and darktable history signals.
-- A four-part portability report covering visible edits, rating, keywords, and capture date, with evidence, plain-language verdicts, format caveats, and an actionable checklist.
-- Local luminance-signature comparison when both files are browser-decodable, and an explicit “flattened” result when a pixel-bearing export is present.
-- Free text-report download and checklist copy. The core checker and safety guidance are not paywalled.
-- Optional $12 one-time Pro unlock using the Sociobot hosted checkout/license contract. Returned licenses are stored locally, verified at most daily, restored by paste, and reconciled without blocking the free experience. Pro keeps up to 25 reports locally.
-- Responsive cassette-era zine interface, keyboard file controls, drag/drop, empty/error/loading states, network status, offline fallback, reduced-motion behavior, privacy and terms routes, manifest, service worker, sitemap, and Azure Static Web Apps headers/fallback.
-- Original generated cassette/contact-sheet hero in AVIF (128 KB), WebP (204 KB), and JPEG (192 KB). Source, prompt, model, date, and licensing provenance are in `assets/src/` and `.factory/design.md`.
+- **P1 — released Pro checkout:** registered the live, one-time $12 product
+  `Edit Sidecar Check Pro` with the Sociobot/Dodo billing catalog and its
+  immutable `photo-edit-sidecar-check` product mapping. The product uses the
+  required return URL `https://photo-edit-sidecar-check.sociobot.in/` and is
+  enabled for production. `src/license.ts` now uses only
+  `https://api.sociobot.in/api/v1`; the CSP permits that production host and
+  no longer permits the pilot host.
+- **P2 — immutable assets:** Azure Static Web Apps configuration now serves
+  `/assets/*` with `Cache-Control: public, max-age=31536000, immutable`.
+  The shell defaults to `public, max-age=0, must-revalidate`, and
+  `/service-worker.js` uses `no-cache, must-revalidate`, so updates remain
+  discoverable.
 
-## Run and verify
+## Exact regression coverage
 
-Exact factory build sequence:
+- `tests/release-config.test.ts` locks the live checkout URL, rejects the
+  pilot host, validates production-only CSP, and validates the shell, worker,
+  and hashed-asset cache rules.
+- The Playwright production-license regression opens `?license=returned-license`,
+  verifies token storage and URL cleanup, checks the Buy Pro link, then reloads
+  and proves the cached daily verdict prevents a second verification request.
+  It runs in both desktop Chromium and the iPhone-13/390 px project.
+
+## Verification evidence
+
+Ran from a clean dependency install:
 
 ```sh
-npm ci && npm test && npm run build
+npm ci
+npm test
+npm run build
+npm audit --omit=dev --audit-level=high
 ```
 
-The deployment root is `dist/`; `dist/index.html` is produced at that root.
+Results: 0 audit vulnerabilities; Vitest **5/5**; TypeScript production build
+passed; Playwright **10/10** across desktop Chromium and 390 px mobile; output
+is `dist/index.html`. Production payload is 31.59 kB JS (11.77 kB gzip) and
+16.24 kB CSS (4.37 kB gzip), within the static budgets.
 
-Builder verification completed 2026-08-28 (superseded by independent report):
+Post-deploy checks against the live custom domain:
 
-- Vitest: 3/3 passing.
-- Playwright 1.58.2: 8/8 passing across desktop Chromium and a 390 px mobile Chromium profile.
-- End-to-end coverage: real source/XMP + JPEG handoff, report verdicts, empty and unsupported input errors, privacy route, mobile overflow, offline fallback.
-- axe-core: no serious or critical violations on the completed report or privacy page.
-- `npm audit`: 0 vulnerabilities.
-- Production payload: 31.60 KB JS (11.78 KB gzip), 16.24 KB CSS (4.37 KB gzip), no runtime font payload.
-- The independent verifier measured Lighthouse mobile Performance 94 and
-  Accessibility 100; FCP 1.0 s, LCP 1.7 s, TBT 270 ms, CLS 0.
-- Manual visual review completed at 1440 px and 390 px; no horizontal overflow at 390 px.
+- `verify-url.sh` returned HTTP 200 in 737 ms with no console/page errors;
+  title, `lang=en`, one `h1`, `main`, and image alt coverage are present.
+- Playwright desktop and 390 px checks found no console errors, no serious or
+  critical axe violations, no horizontal overflow, a visible first-tab
+  **Skip to checker** focus target, exactly one `h1`, and no third-party
+  requests during the free flow. The live Buy Pro link is the production URL.
+- A first live visit registered the worker; an offline reload rendered
+  **“Offline, not uploaded.”** with **Try again**.
+- Live response headers are `Referrer-Policy: no-referrer`,
+  `X-Content-Type-Options: nosniff`, restrictive production-only CSP,
+  `Permissions-Policy: camera=(), microphone=(), geolocation=()`, and HSTS.
+  Live index and hashed JS SHA-256 values exactly match `dist/`.
+- Live asset header: `public, max-age=31536000, immutable`; live worker header:
+  `no-cache, must-revalidate`; live shell header:
+  `public, max-age=0, must-revalidate`.
+- `GET https://api.sociobot.in/api/v1/products/photo-edit-sidecar-check/checkout`
+  returns HTTP **303** to a hosted `checkout.dodopayments.com` session;
+  invalid-license verification returns the expected HTTP 200 JSON
+  `{ "valid": false, "reason": "invalid" }` without storing photo data.
+
+Lighthouse’s current CLI crashed its tab in this container despite working
+Playwright Chromium; this repair does not add runtime work, and the independent
+live baseline recorded Performance **94** and Accessibility **100**. The
+browser and axe checks above were completed against this deployment.
+
+## Product behavior preserved
+
+The local-only two-bay inspection workflow, free text report/checklist export,
+metadata comparison, keyboard file controls, responsive cassette-era layout,
+privacy/terms routes, privacy policy, and PWA recovery all remain unchanged.
+Photo bytes never leave the browser. The checkout redirect was tested without
+submitting a payment; returned-license behavior is covered by the production
+URL regression without creating a customer charge.
 
 ## Known limits
 
-- The checker deliberately does not render RAW data or emulate Lightroom, Snapseed, darktable, or another proprietary develop engine. A detected recipe is evidence of instructions, not proof the receiving app will interpret them identically.
-- Metadata reads are capped at the first 24 MB per file to avoid loading an entire very large RAW into memory. Unusually late metadata may be missed and is called out in the report.
-- HEIC/HEIF and some TIFF visual previews depend on browser codec support. Their file presence still establishes a pixel-bearing export, but preview-distance evidence may be unavailable.
-- This parser targets the portable fields in the brief, not every EXIF/IPTC maker note or every vendor namespace.
-- **Release blocker:** billing still uses the staging `pilot-api.sociobot.in`
-  base in the live deployment. Its checkout returns 404; the production API
-  returns 404 too because the product has not been registered. Do not claim
-  release readiness until registration, release-base deployment, and end-to-end
-  checkout/restore verification have passed.
-- **P2:** the live host serves hashed assets with `max-age=30` rather than a
-  long-lived immutable policy.
-
-## Suggested next steps
-
-- Beta-test representative Lightroom ↔ Snapseed and Lightroom ↔ darktable pairs against the 80% prediction target.
-- Add fixture files from additional camera vendors when redistribution rights allow.
-- Register the production paid product, replace the staging billing base, and
-  run an independent real checkout/return-token verification.
-- Configure immutable caching for hashed assets.
+- RAW develop recipes remain evidence rather than a promise that another
+  editor will interpret proprietary settings identically.
+- Metadata inspection is capped at the first 24 MB per file, and browser
+  preview support for HEIC/HEIF/TIFF varies by codec.
+- A future paid purchase should continue to be smoke-tested with its real
+  callback token after any billing-provider or API change; do not create a
+  charge merely for routine deploy verification.
