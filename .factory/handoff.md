@@ -1,5 +1,19 @@
 # Edit Sidecar Check — handoff
 
+## Verification status: **FAIL**
+
+Independent verification of candidate
+`204136c58babeb279876f32b4c66902cff528923` against
+https://photo-edit-sidecar-check.sociobot.in completed on 2026-08-28 UTC.
+The live HTML, JS, CSS, and service worker exactly match the candidate build,
+and the free local checker passes its functional, accessibility, mobile, PWA,
+privacy, and performance checks. Release is nevertheless **not approved**:
+the live Buy Pro link points to `pilot-api.sociobot.in` and its checkout returns
+HTTP 404; the equivalent production billing endpoint also returns HTTP 404.
+The paid product must be registered and the release API base deployed before
+release. The full evidence and a second P2 cache-policy finding are in
+`.factory/verification.md`.
+
 ## What shipped
 
 - A complete local-first, two-bay handoff checker for a source photo/XMP set and destination export/XMP set.
@@ -21,7 +35,7 @@ npm ci && npm test && npm run build
 
 The deployment root is `dist/`; `dist/index.html` is produced at that root.
 
-Verification completed 2026-08-28:
+Builder verification completed 2026-08-28 (superseded by independent report):
 
 - Vitest: 3/3 passing.
 - Playwright 1.58.2: 8/8 passing across desktop Chromium and a 390 px mobile Chromium profile.
@@ -29,8 +43,8 @@ Verification completed 2026-08-28:
 - axe-core: no serious or critical violations on the completed report or privacy page.
 - `npm audit`: 0 vulnerabilities.
 - Production payload: 31.60 KB JS (11.78 KB gzip), 16.24 KB CSS (4.37 KB gzip), no runtime font payload.
-- Lighthouse mobile: Performance 99, Accessibility 100, Best Practices 100, SEO 100.
-- Lighthouse timings: FCP 0.9 s, LCP 2.0 s, TBT 50 ms, CLS 0.
+- The independent verifier measured Lighthouse mobile Performance 94 and
+  Accessibility 100; FCP 1.0 s, LCP 1.7 s, TBT 270 ms, CLS 0.
 - Manual visual review completed at 1440 px and 390 px; no horizontal overflow at 390 px.
 
 ## Known limits
@@ -39,10 +53,18 @@ Verification completed 2026-08-28:
 - Metadata reads are capped at the first 24 MB per file to avoid loading an entire very large RAW into memory. Unusually late metadata may be missed and is called out in the report.
 - HEIC/HEIF and some TIFF visual previews depend on browser codec support. Their file presence still establishes a pixel-bearing export, but preview-distance evidence may be unavailable.
 - This parser targets the portable fields in the brief, not every EXIF/IPTC maker note or every vendor namespace.
-- Billing uses the staging `pilot-api.sociobot.in` base as required for factory staging. Switch the base to `api.sociobot.in` when the factory registers and releases the product.
+- **Release blocker:** billing still uses the staging `pilot-api.sociobot.in`
+  base in the live deployment. Its checkout returns 404; the production API
+  returns 404 too because the product has not been registered. Do not claim
+  release readiness until registration, release-base deployment, and end-to-end
+  checkout/restore verification have passed.
+- **P2:** the live host serves hashed assets with `max-age=30` rather than a
+  long-lived immutable policy.
 
 ## Suggested next steps
 
 - Beta-test representative Lightroom ↔ Snapseed and Lightroom ↔ darktable pairs against the 80% prediction target.
 - Add fixture files from additional camera vendors when redistribution rights allow.
-- Replace the staging billing base during release registration.
+- Register the production paid product, replace the staging billing base, and
+  run an independent real checkout/return-token verification.
+- Configure immutable caching for hashed assets.
