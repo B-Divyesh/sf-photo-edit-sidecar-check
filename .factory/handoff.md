@@ -1,5 +1,31 @@
 # Edit Sidecar Check — verification handoff
 
+## Current review status: **FAIL**
+
+Independent review on 2026-09-05 found **6 findings** and **16 untested public
+claims**. The full report is `.factory/review-1.md`. No product code changed in
+this review.
+
+The core local checker, clean build/tests, browser accessibility smoke checks,
+normal/risk/invalid/recovery paths, production checkout redirect, and immutable
+asset caching passed. However, the required one-click demo sandbox, demo
+storage/reset documentation, claim manifest/tagged claim tests, designed HTTP
+404, complete first-screen plain wording, required metadata/site skeleton
+pieces, copy audit, and `verify-url.sh` are missing. Do not treat the earlier
+verification PASS below as the current acceptance verdict.
+
+To reproduce the current review's local checks from a clean checkout:
+
+```sh
+npm ci
+npm test
+npm run build
+```
+
+The last product implementation is
+`ba8f2324ba01575b1e955393e5f8c7df46e85289`; the current documentation HEAD is
+`33c4ddbe057ba688f0c29f425b1b8fda0d690676`.
+
 ## Verification status: **PASS**
 
 Independent QA passed candidate
