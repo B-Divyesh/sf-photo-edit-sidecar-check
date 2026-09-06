@@ -61,3 +61,11 @@ Generation prompt (factory image model, `factory-image`, 2026-08-27):
 > Use case: stylized-concept. Asset type: landing-page hero illustration. Primary request: a cassette-era editorial still life explaining a digital photo handoff inspection. Scene: an open translucent audio cassette on a warm cream photocopied contact sheet; the left reel contains a tiny landscape negative, the right reel contains abstract metadata marks and rating dots; a strip of magnetic tape crosses a red grease-pencil registration mark. Style: tactile 1980s darkroom zine collage, screenprint grain, cut-paper edges, slightly misregistered two-color ink, sophisticated museum-publication composition. Wide landscape, hero subject weighted right with calm negative space, no people. Palette: warm paper cream, carbon black, oxide red, faded cyan, muted olive. Lighting: flat scanner-bed light with crisp physical shadows. Materials: scratched acetate, paper fibers, graphite, rubber stamp ink. Constraints: no readable text, no letters, no brands, no logos, no watermark, no UI mockup, no modern phone, no extra cassettes. Avoid: neon gradients, glossy 3D, cyberpunk, photorealistic branded products, illegible fake typography.
 
 Source PNG and JSON prompt live in `assets/src/`. Optimized WebP is generated locally for `public/assets/` and capped below 300 KB. The image is AI-generated and original for this product; this is disclosed in the footer.
+
+### Release repair additions
+
+- `/demo` keeps the cassette bench but uses a blue, sticky sample label. Blue marks information rather than a check verdict.
+- The 404 page uses a hand-drawn cassette with a broken red tape path. It is CSS artwork authored for this product.
+- `public/assets/social-card.jpg` is a 1200×630 crop of the original generated cassette art. No new model prompt or third-party asset was used.
+- `public/apple-touch-icon.png` is a raster export of the repository’s original cassette-reel SVG.
+- On a 390 px screen, the job and sample action appear before the illustration. The demo shows its populated report before file controls.

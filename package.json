@@ -1,6 +1,6 @@
 {
   "name": "photo-edit-sidecar-check",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
+    "test:claims": "playwright test tests/e2e/claims.spec.ts --project=chromium",
+    "verify:url": "bash scripts/verify-url.sh",
     "test": "npm run test:unit && npm run build && npm run test:e2e"
   },
   "devDependencies": {

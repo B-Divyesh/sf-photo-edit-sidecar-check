@@ -1,10 +1,11 @@
 {
-  "navigationFallback": { "rewrite": "/index.html", "exclude": ["/assets/*", "/*.svg", "/*.webmanifest", "/*.js"] },
+  "navigationFallback": { "rewrite": "/index.html", "exclude": ["/assets/*", "/*.svg", "/*.png", "/*.webmanifest", "/*.js", "/*.css", "/*.xml", "/*.txt", "/*.html"] },
   "globalHeaders": {
-    "Content-Security-Policy": "default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self' https://api.sociobot.in; object-src 'none'; base-uri 'self'; form-action 'self' https://api.sociobot.in",
+    "Content-Security-Policy": "default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self' https://api.sociobot.in; object-src 'none'; base-uri 'self'; form-action 'self' https://api.sociobot.in; frame-ancestors 'none'",
     "Cache-Control": "public, max-age=0, must-revalidate",
     "Referrer-Policy": "no-referrer",
     "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
   },
   "routes": [
@@ -15,7 +16,28 @@
     {
       "route": "/service-worker.js",
       "headers": { "Cache-Control": "no-cache, must-revalidate" }
+    },
+    { "route": "/", "rewrite": "/index.html" },
+    { "route": "/demo", "rewrite": "/index.html" },
+    { "route": "/privacy", "rewrite": "/index.html" },
+    { "route": "/terms", "rewrite": "/index.html" },
+    { "route": "/index.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
+    { "route": "/icon.svg", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/apple-touch-icon.png", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/manifest.webmanifest", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
+    { "route": "/robots.txt", "headers": { "Cache-Control": "public, max-age=3600" } },
+    { "route": "/sitemap.xml", "headers": { "Cache-Control": "public, max-age=3600" } },
+    { "route": "/offline.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
+    { "route": "/offline.css", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/status.css", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/404.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
+    {
+      "route": "/*",
+      "statusCode": 404
     }
   ],
+  "responseOverrides": {
+    "404": { "rewrite": "/404.html" }
+  },
   "mimeTypes": { ".webmanifest": "application/manifest+json" }
 }

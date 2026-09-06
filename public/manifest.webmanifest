@@ -1,7 +1,7 @@
 {
   "name": "Edit Sidecar Check",
   "short_name": "Sidecar Check",
-  "description": "A local-first photo handoff preflight tool.",
+  "description": "Check which photo edits and tags can survive a handoff.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f2e9d8",
