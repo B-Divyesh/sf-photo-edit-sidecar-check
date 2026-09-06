@@ -13,6 +13,7 @@ describe('release configuration', () => {
     const config = JSON.parse(readFileSync('public/staticwebapp.config.json', 'utf8')) as {
       globalHeaders: Record<string, string>;
       routes: Array<{ route: string; headers?: Record<string, string> }>;
+      responseOverrides?: Record<string, { rewrite?: string }>;
     };
     const assetRoute = config.routes.find((route) => route.route === '/assets/*');
     const workerRoute = config.routes.find((route) => route.route === '/service-worker.js');
@@ -22,5 +23,17 @@ describe('release configuration', () => {
     expect(workerRoute?.headers?.['Cache-Control']).toBe('no-cache, must-revalidate');
     expect(config.globalHeaders['Content-Security-Policy']).toContain('https://api.sociobot.in');
     expect(config.globalHeaders['Content-Security-Policy']).not.toContain('pilot-api.sociobot.in');
+    expect(config.globalHeaders['Content-Security-Policy']).toContain("frame-ancestors 'none'");
+    expect(config.responseOverrides?.['404']?.rewrite).toBe('/404.html');
+    expect(readFileSync('public/404.html', 'utf8')).toContain('<h1>This page does not exist</h1>');
+  });
+
+  it('ships social, touch, canonical, demo, and sitemap metadata', () => {
+    const html = readFileSync('index.html', 'utf8');
+    const sitemap = readFileSync('public/sitemap.xml', 'utf8');
+    expect(html).toContain('property="og:image"');
+    expect(html).toContain('name="twitter:card"');
+    expect(html).toContain('rel="apple-touch-icon"');
+    expect(sitemap).toContain('/demo</loc>');
   });
 });

@@ -1,0 +1,13 @@
+{
+  "slug": "photo-edit-sidecar-check",
+  "name": "Edit Sidecar Check Pro",
+  "price_minor": 1200,
+  "currency": "USD",
+  "price_type": "one_time_price",
+  "return_url": "https://photo-edit-sidecar-check.sociobot.in/",
+  "price_evidence": "The existing production offer was verified at $12 one-time in the prior independent release report; its live checkout endpoint returned HTTP 303.",
+  "paid_features": [
+    "Save up to 25 handoff reports in browser storage"
+  ],
+  "license_validation_path": "https://api.sociobot.in/api/v1/products/photo-edit-sidecar-check/verify?license=<token>"
+}

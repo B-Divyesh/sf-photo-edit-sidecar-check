@@ -1,0 +1,86 @@
+[
+  {
+    "id": "sample-comparison",
+    "claim": "One click loads a completed sample report with four photo handoff checks.",
+    "where": "home first screen, demo, README",
+    "test": "npm run test:claims -- --grep @claim:sample-comparison",
+    "sandbox": "fresh Chromium context; open home; click the sample action; assert the bundled source, handoff, and four populated rows"
+  },
+  {
+    "id": "metadata-comparison",
+    "claim": "The checker compares visible edits, rating, keywords, and capture date.",
+    "where": "home, demo report, README",
+    "test": "npm run test:claims -- --grep @claim:metadata-comparison",
+    "sandbox": "fresh Chromium context; open /demo; assert the parsed values and verdict for every named field"
+  },
+  {
+    "id": "demo-isolation",
+    "claim": "Demo data never reads or changes real report history.",
+    "where": "demo banner, privacy, README, .factory/demo.md",
+    "test": "npm run test:claims -- --grep @claim:demo-isolation",
+    "sandbox": "seed a real-history sentinel; instrument localStorage reads; use save and reset in /demo; assert the sentinel is unchanged and demo storage is cleared"
+  },
+  {
+    "id": "local-processing",
+    "claim": "Selected photo and sidecar content stays in the browser, and the free check does not save it.",
+    "where": "home facts, checker, privacy, README",
+    "test": "npm run test:claims -- --grep @claim:local-processing",
+    "sandbox": "add an XMP network canary in /demo; run the check; record every request and body; assert no cross-origin request or canary upload"
+  },
+  {
+    "id": "originals-unchanged",
+    "claim": "The checker reads selected originals without changing them.",
+    "where": "format limits, terms, README",
+    "test": "npm run test:claims -- --grep @claim:originals-unchanged",
+    "sandbox": "hash a temporary DNG; select and check it in /demo; hash the same file again and require an identical SHA-256"
+  },
+  {
+    "id": "report-download",
+    "claim": "The checker and complete text report are free.",
+    "where": "report action, Pro section, terms, README",
+    "test": "npm run test:claims -- --grep @claim:report-download",
+    "sandbox": "fresh /demo with no license; download the report; assert source files, four checks, and checklist content"
+  },
+  {
+    "id": "offline-open-check",
+    "claim": "An open check works without a network.",
+    "where": "home facts, README",
+    "test": "npm run test:claims -- --grep @claim:offline-open-check",
+    "sandbox": "dedicated browser context; open /demo; set the context offline; reset and rebuild the sample report without closing the shared browser"
+  },
+  {
+    "id": "accepted-formats",
+    "claim": "The checker accepts DNG, common camera RAW, XMP, JPEG, TIFF, PNG, WebP, HEIC/HEIF, and AVIF files.",
+    "where": "checker, formats section, README",
+    "test": "npm run test:claims -- --grep @claim:accepted-formats",
+    "sandbox": "enter through /demo; start a real blank check; select one file for every listed extension; assert every file is accepted"
+  },
+  {
+    "id": "pro-history-limit",
+    "claim": "Pro saves up to 25 handoff reports in browser storage.",
+    "where": "Pro section, privacy, terms, README",
+    "test": "npm run test:claims -- --grep @claim:pro-history-limit",
+    "sandbox": "enter through /demo; start real mode with a cached valid fixture license; save 26 reports; assert exactly 25 remain"
+  },
+  {
+    "id": "license-token-only",
+    "claim": "License verification sends only the pasted license token to the Sociobot billing API.",
+    "where": "privacy, README",
+    "test": "npm run test:claims -- --grep @claim:license-token-only",
+    "sandbox": "enter through /demo; restore a fixture token; intercept verification; assert one GET with the encoded token and no request body"
+  },
+  {
+    "id": "no-tracking",
+    "claim": "The site uses no analytics, advertising, tracking, or cookies.",
+    "where": "privacy, README",
+    "test": "npm run test:claims -- --grep @claim:no-tracking",
+    "sandbox": "fresh /demo; record requests, scripts, frames, and cookies through a reset; require same-origin requests and no tracking surfaces"
+  },
+  {
+    "id": "pro-price",
+    "claim": "Pro costs $12 as a one-time purchase.",
+    "where": "home facts, Pro section, terms, README",
+    "test": "npm run test:claims -- --grep @claim:pro-price",
+    "sandbox": "fresh /demo; assert the exact price, price type, and production checkout action"
+  }
+]

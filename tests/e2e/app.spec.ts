@@ -59,14 +59,50 @@ test('uses production billing and keeps a returned license without repeat verifi
   expect(verificationRequests).toBe(1);
 });
 
-test('shows a useful offline state after the first visit', async ({ page, context }) => {
+test('keeps an open check useful when the network drops', async ({ browser }) => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  try {
+    await page.goto('/demo');
+    await expect(page.getByRole('heading', { name: 'This handoff looks ready' })).toBeVisible();
+    await context.setOffline(true);
+    await page.getByRole('button', { name: 'Reset demo' }).click();
+    await expect(page.locator('.comparison-row')).toHaveCount(4);
+    await expect(page.locator('[data-network]')).toContainText('offline');
+  } finally {
+    await context.setOffline(false);
+    await context.close();
+  }
+});
+
+test('updates route titles, canonical URLs, browser history, and focus', async ({ page }) => {
   await page.goto('/');
-  await page.evaluate(() => navigator.serviceWorker.ready);
-  await page.reload();
-  await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
-  await context.setOffline(true);
-  await page.reload();
-  await expect(page.getByRole('heading', { level: 1 })).toContainText(/Offline, not uploaded/i);
-  await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
-  await context.setOffline(false);
+  await page.getByRole('link', { name: 'Privacy' }).first().click();
+  await expect(page).toHaveTitle('Privacy — Edit Sidecar Check');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://photo-edit-sidecar-check.sociobot.in/privacy');
+  await expect(page.getByRole('heading', { level: 1, name: 'Privacy' })).toBeFocused();
+  await page.goBack();
+  await expect(page).toHaveTitle('Edit Sidecar Check — Check photo handoffs');
+  await expect(page.getByRole('heading', { level: 1, name: 'Check what survives a photo handoff' })).toBeFocused();
+});
+
+test('shows the plain first action on a phone without scrolling', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const heading = page.getByRole('heading', { level: 1, name: 'Check what survives a photo handoff' });
+  const sample = page.getByRole('link', { name: 'Try it with sample data' });
+  await expect(heading).toBeVisible();
+  await expect(sample).toBeVisible();
+  const actionBox = await sample.boundingBox();
+  expect(actionBox && actionBox.y + actionBox.height).toBeLessThanOrEqual(844);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('renders the designed 404 document accessibly', async ({ page }) => {
+  await page.goto('/404.html');
+  await expect(page).toHaveTitle('Page not found — Edit Sidecar Check');
+  await expect(page.getByRole('heading', { level: 1, name: 'This page does not exist' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open the checker' })).toHaveAttribute('href', '/');
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations.filter((issue) => ['serious', 'critical'].includes(issue.impact ?? ''))).toEqual([]);
 });

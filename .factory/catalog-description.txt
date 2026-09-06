@@ -1,0 +1,1 @@
+Check which photo edits, ratings, keywords, and dates can survive a handoff before moving a batch.
