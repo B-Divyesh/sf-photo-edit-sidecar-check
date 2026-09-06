@@ -56,7 +56,7 @@ Counts treat hyphenated terms, prices, and slash-separated format names as one w
 | Pro saves up to 25 handoff reports in this browser. | 10 | Pass |
 | The checker and text report stay free. | 7 | Pass |
 | $12 one-time purchase | 3 | Pass |
-| Buy Pro | 2 | Pass |
+| Buy Pro at checkout | 4 | Pass |
 | Have a license? | 3 | Pass |
 | Paste it here | 3 | Pass |
 | Restore purchase | 2 | Pass |

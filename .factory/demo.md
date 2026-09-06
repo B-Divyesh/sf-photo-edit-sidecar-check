@@ -28,6 +28,8 @@ Trying report history uses only `sessionStorage` key `demo:sidecar-check:history
 - `sb_license:photo-edit-sidecar-check`
 - `sb_license_verdict:photo-edit-sidecar-check`
 
-**Reset demo** deletes the demo key and rebuilds the four files and report. **Start for real** deletes the demo key and opens an empty checker.
+Opening Demo keeps any real in-memory selection separate. **Start for real** restores that selection.
 
-The claim test `@claim:demo-isolation` places a sentinel in real history. It proves save and reset leave that sentinel unchanged.
+**Reset demo** deletes the demo key and rebuilds the four files and report. A direct demo visit returns to an empty checker.
+
+The claim test `@claim:demo-isolation` places a sentinel in real history. It also proves an active real file selection survives a demo visit.

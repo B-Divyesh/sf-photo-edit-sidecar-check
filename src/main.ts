@@ -27,6 +27,10 @@ const state: {
   error: '',
   demo: false,
 };
+let realSession: { files: Record<Bay, InspectedFile[]>; report?: CheckReport; error: string } = {
+  files: { source: [], handoff: [] },
+  error: '',
+};
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character] ?? character);
@@ -213,7 +217,7 @@ function proHtml(): string {
   return `
     <section class="pro-strip" id="pro" aria-labelledby="pro-title">
       <div><p class="eyebrow">Optional local history</p><h2 id="pro-title">Save repeat checks with Pro</h2><p>Pro saves up to 25 handoff reports in this browser. The checker and text report stay free.</p></div>
-      <div class="price-block"><strong>$12</strong><span>one-time purchase</span><a class="button button-primary" href="${checkoutUrl()}">Buy Pro</a></div>
+      <div class="price-block"><strong>$12</strong><span>one-time purchase</span><a class="button button-primary" href="${checkoutUrl()}">Buy Pro at checkout</a></div>
       ${restore}
       ${history}
     </section>`;
@@ -358,16 +362,26 @@ async function resetDemo(): Promise<void> {
 }
 
 async function enterDemo(announce = false): Promise<void> {
+  if (!state.demo) {
+    realSession = {
+      files: { source: [...state.files.source], handoff: [...state.files.handoff] },
+      report: state.report,
+      error: state.error,
+    };
+  }
   await resetDemo();
   render(undefined, announce);
 }
 
 function startReal(announce = false): void {
+  const leavingDemo = state.demo;
   sessionStorage.removeItem(DEMO_HISTORY_KEY);
   state.demo = false;
-  state.files = { source: [], handoff: [] };
-  state.report = undefined;
-  state.error = '';
+  if (leavingDemo) {
+    state.files = { source: [...realSession.files.source], handoff: [...realSession.files.handoff] };
+    state.report = realSession.report;
+    state.error = realSession.error;
+  }
   state.processing = false;
   state.license = initialLicenseState();
   render(undefined, announce);

@@ -49,9 +49,10 @@ test('@claim:metadata-comparison reports edits, rating, keywords, and capture da
 test('@claim:demo-isolation resets sample state without reading or changing real history', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('sidecar-check:history', JSON.stringify([{ sourceFiles: ['REAL-LIBRARY.dng'] }]));
-    localStorage.setItem('sb_license:photo-edit-sidecar-check', 'real-license');
     const original = Storage.prototype.getItem;
-    (window as unknown as { realStorageReads: string[] }).realStorageReads = [];
+    const testWindow = window as unknown as { realStorageReads: string[]; restoreStorageGet: () => void };
+    testWindow.realStorageReads = [];
+    testWindow.restoreStorageGet = () => { Storage.prototype.getItem = original; };
     Storage.prototype.getItem = function getItem(key: string) {
       if (this === localStorage) (window as unknown as { realStorageReads: string[] }).realStorageReads.push(key);
       return original.call(this, key);
@@ -70,6 +71,14 @@ test('@claim:demo-isolation resets sample state without reading or changing real
     real: localStorage.getItem('sidecar-check:history'),
     demo: sessionStorage.getItem('demo:sidecar-check:history'),
   }))).toEqual({ real: JSON.stringify([{ sourceFiles: ['REAL-LIBRARY.dng'] }]), demo: null });
+  await page.evaluate(() => (window as unknown as { restoreStorageGet: () => void }).restoreStorageGet());
+  await page.getByRole('button', { name: 'Start for real' }).click();
+  await page.locator('[data-file-input="source"]').setInputFiles({ name: 'keep-this-selection.dng', mimeType: 'image/x-adobe-dng', buffer: Buffer.from('II*\0\b\0\0\0\0\0') });
+  await expect(page.getByText('keep-this-selection.dng', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Demo' }).click();
+  await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
+  await page.getByRole('button', { name: 'Start for real' }).click();
+  await expect(page.getByText('keep-this-selection.dng', { exact: true })).toBeVisible();
 });
 
 test('@claim:local-processing keeps selected file content off the network', async ({ page }) => {
@@ -186,5 +195,5 @@ test('@claim:pro-price shows the live $12 one-time offer and production checkout
   const section = page.locator('#pro');
   await expect(section).toContainText('$12');
   await expect(section).toContainText('one-time purchase');
-  await expect(section.getByRole('link', { name: 'Buy Pro' })).toHaveAttribute('href', 'https://api.sociobot.in/api/v1/products/photo-edit-sidecar-check/checkout');
+  await expect(section.getByRole('link', { name: 'Buy Pro at checkout' })).toHaveAttribute('href', 'https://api.sociobot.in/api/v1/products/photo-edit-sidecar-check/checkout');
 });
