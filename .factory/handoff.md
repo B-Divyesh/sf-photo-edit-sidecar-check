@@ -6,11 +6,11 @@
 
 - Live URL: `https://photo-edit-sidecar-check.sociobot.in`
 - Demo URL: `https://photo-edit-sidecar-check.sociobot.in/demo`
-- Deployed implementation SHA: `7c36fa3936f7fc492f5a545234115bf05fb9d02f`
+- Deployed implementation SHA: `27a116fa5b9436bb20a40e8e7a2b9901e71d0f16`
 - Documentation SHA: the later commit containing this handoff; the exact SHA is reported with the work-order result.
 - Deployed UTC: 2026-09-06
 
-The live `index.html` SHA-256 is `1ec7b3601167bb69fafabd1b7018a99103463fdde24587f80bb4736e8a7f0b08`. It matches the candidate build.
+The live `index.html` SHA-256 is `e7ae4351f79c5ee027b58ea5d06d2f88543b11345dac99696c2bfb051db5786e`. It matches the candidate build.
 
 ## What changed
 
@@ -19,6 +19,7 @@ The live `index.html` SHA-256 is `1ec7b3601167bb69fafabd1b7018a99103463fdde24587
 - The sample runs through the production parser and opens on a completed four-row report.
 - Added the persistent demo label, reset action, real-mode exit, and isolated `demo:` session storage.
 - Added `.factory/demo.md` and a browser test proving real history is neither read nor changed.
+- An in-progress real file selection is kept in memory and restored after leaving Demo.
 - Added `.factory/claims.json` with 12 public claims and one outcome test per claim.
 - Rewrote the first screen with the job, audience, next action, and three plain facts.
 - Added `.factory/copy-audit.md`; no landing sentence exceeds 22 words or uses a banned term.
@@ -46,7 +47,7 @@ The live `index.html` SHA-256 is `1ec7b3601167bb69fafabd1b7018a99103463fdde24587
 
 ## Clean verification
 
-A detached worktree at deployed candidate `7c36fa3` was used for the final clean verification. From that clean checkout:
+A detached worktree at deployed candidate `27a116f` was used for the final clean verification. From that clean checkout:
 
 ```sh
 npm ci
@@ -63,8 +64,8 @@ Results:
 - Declared claims: 12/12 commands passed individually.
 - TypeScript and Vite production build passed.
 - All 12 manifest commands passed again at the exact deployed SHA.
-- Output: 38,719 B JS and 18,481 B CSS before gzip.
-- Gzip: 13,475 B JS and 4,849 B CSS.
+- Output: 38,950 B JS and 18,481 B CSS before gzip.
+- Gzip: 13,548 B JS and 4,849 B CSS.
 - Hero AVIF: 130,152 B.
 
 Run the same gates with:
