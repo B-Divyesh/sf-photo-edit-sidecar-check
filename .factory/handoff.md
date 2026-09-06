@@ -1,5 +1,12 @@
 # Edit Sidecar Check — repair 2 handoff
 
+> **Verification 3 status (2026-09-06): FAIL.** Independent QA found two open
+> accessibility findings: serious mobile report contrast during its entry fade,
+> which also makes the clean browser suite fail 39/40, and a moderate nested
+> complementary landmark in report limits. See
+> [`.factory/verification-3.md`](verification-3.md). All 12 declared claim
+> commands passed independently; this is not a claim-coverage failure.
+
 ## Release status
 
 **Ready for review.** All six review findings and all 16 previously untested-claim findings were repaired at their causes.
