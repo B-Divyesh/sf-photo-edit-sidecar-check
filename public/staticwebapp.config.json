@@ -1,5 +1,5 @@
 {
-  "navigationFallback": { "rewrite": "/index.html", "exclude": ["/assets/*", "/*.svg", "/*.png", "/*.webmanifest", "/*.js", "/*.css", "/*.xml", "/*.txt", "/*.html"] },
+  "navigationFallback": { "rewrite": "/index.html", "exclude": ["/*"] },
   "globalHeaders": {
     "Content-Security-Policy": "default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self' https://api.sociobot.in; object-src 'none'; base-uri 'self'; form-action 'self' https://api.sociobot.in; frame-ancestors 'none'",
     "Cache-Control": "public, max-age=0, must-revalidate",
@@ -30,11 +30,7 @@
     { "route": "/offline.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
     { "route": "/offline.css", "headers": { "Cache-Control": "public, max-age=86400" } },
     { "route": "/status.css", "headers": { "Cache-Control": "public, max-age=86400" } },
-    { "route": "/404.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
-    {
-      "route": "/*",
-      "statusCode": 404
-    }
+    { "route": "/404.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } }
   ],
   "responseOverrides": {
     "404": { "rewrite": "/404.html" }
