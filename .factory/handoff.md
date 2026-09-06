@@ -1,141 +1,124 @@
-# Edit Sidecar Check — verification handoff
+# Edit Sidecar Check — repair 2 handoff
 
-## Current review status: **FAIL**
+## Release status
 
-Independent review on 2026-09-05 found **6 findings** and **16 untested public
-claims**. The full report is `.factory/review-1.md`. No product code changed in
-this review.
+**Ready for review.** All six review findings and all 16 previously untested-claim findings were repaired at their causes.
 
-The core local checker, clean build/tests, browser accessibility smoke checks,
-normal/risk/invalid/recovery paths, production checkout redirect, and immutable
-asset caching passed. However, the required one-click demo sandbox, demo
-storage/reset documentation, claim manifest/tagged claim tests, designed HTTP
-404, complete first-screen plain wording, required metadata/site skeleton
-pieces, copy audit, and `verify-url.sh` are missing. Do not treat the earlier
-verification PASS below as the current acceptance verdict.
+- Live URL: `https://photo-edit-sidecar-check.sociobot.in`
+- Demo URL: `https://photo-edit-sidecar-check.sociobot.in/demo`
+- Deployed implementation SHA: `7c36fa3936f7fc492f5a545234115bf05fb9d02f`
+- Documentation SHA: the later commit containing this handoff; the exact SHA is reported with the work-order result.
+- Deployed UTC: 2026-09-06
 
-To reproduce the current review's local checks from a clean checkout:
+The live `index.html` SHA-256 is `1ec7b3601167bb69fafabd1b7018a99103463fdde24587f80bb4736e8a7f0b08`. It matches the candidate build.
 
-```sh
-npm ci
-npm test
-npm run build
-```
+## What changed
 
-The last product implementation is
-`ba8f2324ba01575b1e955393e5f8c7df46e85289`; the current documentation HEAD is
-`33c4ddbe057ba688f0c29f425b1b8fda0d690676`.
+- Added a one-click **Try it with sample data** action on the first screen.
+- Added `/demo` and `?demo=1` entry points with four realistic bundled files.
+- The sample runs through the production parser and opens on a completed four-row report.
+- Added the persistent demo label, reset action, real-mode exit, and isolated `demo:` session storage.
+- Added `.factory/demo.md` and a browser test proving real history is neither read nor changed.
+- Added `.factory/claims.json` with 12 public claims and one outcome test per claim.
+- Rewrote the first screen with the job, audience, next action, and three plain facts.
+- Added `.factory/copy-audit.md`; no landing sentence exceeds 22 words or uses a banned term.
+- Added route-specific titles, descriptions, canonicals, Open Graph data, Twitter data, and touch icon.
+- Added Demo, Checker, and Privacy header links plus the required footer identity and build label.
+- Added a designed cassette-style HTTP 404 response with a route back to the checker.
+- Added `frame-ancestors 'none'` as a response header and retained the existing security and cache rules.
+- Added a 1200×630 social image derived from the product’s original cassette art.
+- Kept the $12 one-time Pro history offer, restore flow, production checkout, and daily license cache.
+- Removed the unsupported workflow-presets wording. Pro still saves up to 25 local reports.
+- Added the worker-compatible URL checker under `scripts/`.
 
-## Verification status: **PASS**
+## Earlier findings
 
-Independent QA passed candidate
-`3af9e27f92957baef4be51f8f1844a55e3b14be4` at
-https://photo-edit-sidecar-check.sociobot.in on 2026-08-28 UTC. The full
-fresh-evidence record is in `.factory/verification-2.md`.
+| Finding | Disposition | Evidence |
+| --- | --- | --- |
+| Missing one-click demo and sandbox | Resolved | `/demo`; `.factory/demo.md`; `@claim:sample-comparison`; `@claim:demo-isolation` |
+| Missing claims register and claim tests | Resolved | `.factory/claims.json`; all 12 declared commands pass independently |
+| Unknown URLs showed home | Resolved | A random live URL returns HTTP 404 and the exact `dist/404.html` body |
+| First screen used slogan copy | Resolved | Live phone and desktop show “Check what survives a photo handoff” and the sample action before scrolling |
+| Incomplete metadata and site skeleton | Resolved | Route metadata, social preview, touch icon, header, footer, CSP, sitemap, and route tests |
+| Missing copy audit and URL checker | Resolved | `.factory/copy-audit.md`; `scripts/verify-url.sh`; worker checker also passed live |
+| Pilot checkout URL | Remains resolved | The live production checkout endpoint returns HTTP 303 |
+| Missing immutable asset caching | Remains resolved | Live hashed JS returns one-year immutable caching; the worker is revalidated |
 
-No product code was changed by the verifier. The live index, JS, CSS, hero,
-worker, manifest, and offline assets match the candidate production build.
+## Clean verification
 
-## Current verification summary
-
-- Clean `npm ci`, `npm test`, exact TypeScript/Vite production build, and
-  production dependency audit all passed: Vitest 5/5, Playwright 10/10, and
-  audit 0 vulnerabilities.
-- Live normal, risk, invalid-input, recovery, report-download, invalid-license,
-  desktop keyboard, 390 px mobile, reduced-motion, offline PWA, and worker
-  update checks passed without console/page errors.
-- Live axe has 0 serious/critical findings; Lighthouse mobile is Performance
-  99 and Accessibility 100 (LCP 1.7 s, CLS 0).
-- The local-only free flow made same-origin requests only. No analytics,
-  remote font, or third-party script is shipped. Optional license verification
-  sends only a voluntarily supplied token to the documented Sociobot API.
-- The required production checkout endpoint returns HTTP 303 to its hosted
-  Dodo session; fingerprinted assets use one-year immutable caching, while the
-  shell and worker are revalidated.
-
-## Repairs
-
-- **P1 — released Pro checkout:** registered the live, one-time $12 product
-  `Edit Sidecar Check Pro` with the Sociobot/Dodo billing catalog and its
-  immutable `photo-edit-sidecar-check` product mapping. The product uses the
-  required return URL `https://photo-edit-sidecar-check.sociobot.in/` and is
-  enabled for production. `src/license.ts` now uses only
-  `https://api.sociobot.in/api/v1`; the CSP permits that production host and
-  no longer permits the pilot host.
-- **P2 — immutable assets:** Azure Static Web Apps configuration now serves
-  `/assets/*` with `Cache-Control: public, max-age=31536000, immutable`.
-  The shell defaults to `public, max-age=0, must-revalidate`, and
-  `/service-worker.js` uses `no-cache, must-revalidate`, so updates remain
-  discoverable.
-
-## Exact regression coverage
-
-- `tests/release-config.test.ts` locks the live checkout URL, rejects the
-  pilot host, validates production-only CSP, and validates the shell, worker,
-  and hashed-asset cache rules.
-- The Playwright production-license regression opens `?license=returned-license`,
-  verifies token storage and URL cleanup, checks the Buy Pro link, then reloads
-  and proves the cached daily verdict prevents a second verification request.
-  It runs in both desktop Chromium and the iPhone-13/390 px project.
-
-## Verification evidence
-
-Ran from a clean dependency install:
+A detached worktree at deployed candidate `7c36fa3` was used for the final clean verification. From that clean checkout:
 
 ```sh
 npm ci
 npm test
+# every `test` command in .factory/claims.json, one at a time
 npm run build
-npm audit --omit=dev --audit-level=high
 ```
 
-Results: 0 audit vulnerabilities; Vitest **5/5**; TypeScript production build
-passed; Playwright **10/10** across desktop Chromium and 390 px mobile; output
-is `dist/index.html`. Production payload is 31.59 kB JS (11.77 kB gzip) and
-16.24 kB CSS (4.37 kB gzip), within the static budgets.
+Results:
 
-Post-deploy checks against the live custom domain:
+- `npm ci`: 70 packages, 0 vulnerabilities.
+- Vitest: 6/6 passed.
+- Playwright: 40/40 passed across desktop Chromium and iPhone 13 settings.
+- Declared claims: 12/12 commands passed individually.
+- TypeScript and Vite production build passed.
+- All 12 manifest commands passed again at the exact deployed SHA.
+- Output: 38,719 B JS and 18,481 B CSS before gzip.
+- Gzip: 13,475 B JS and 4,849 B CSS.
+- Hero AVIF: 130,152 B.
 
-- `verify-url.sh` returned HTTP 200 in 737 ms with no console/page errors;
-  title, `lang=en`, one `h1`, `main`, and image alt coverage are present.
-- Playwright desktop and 390 px checks found no console errors, no serious or
-  critical axe violations, no horizontal overflow, a visible first-tab
-  **Skip to checker** focus target, exactly one `h1`, and no third-party
-  requests during the free flow. The live Buy Pro link is the production URL.
-- A first live visit registered the worker; an offline reload rendered
-  **“Offline, not uploaded.”** with **Try again**.
-- Live response headers are `Referrer-Policy: no-referrer`,
-  `X-Content-Type-Options: nosniff`, restrictive production-only CSP,
-  `Permissions-Policy: camera=(), microphone=(), geolocation=()`, and HSTS.
-  Live index and hashed JS SHA-256 values exactly match `dist/`.
-- Live asset header: `public, max-age=31536000, immutable`; live worker header:
-  `no-cache, must-revalidate`; live shell header:
-  `public, max-age=0, must-revalidate`.
-- `GET https://api.sociobot.in/api/v1/products/photo-edit-sidecar-check/checkout`
-  returns HTTP **303** to a hosted `checkout.dodopayments.com` session;
-  invalid-license verification returns the expected HTTP 200 JSON
-  `{ "valid": false, "reason": "invalid" }` without storing photo data.
+Run the same gates with:
 
-Fresh independent Lighthouse 12.8.2 verification completed against this
-deployment with the installed Playwright Chromium: Performance **99** and
-Accessibility **100** (LCP 1.7 s, CLS 0). The browser and axe checks above
-were completed against this deployment.
+```sh
+npm ci
+npm test
+npm run test:claims
+npm run build
+```
 
-## Product behavior preserved
+## Live verification
 
-The local-only two-bay inspection workflow, free text report/checklist export,
-metadata comparison, keyboard file controls, responsive cassette-era layout,
-privacy/terms routes, privacy policy, and PWA recovery all remain unchanged.
-Photo bytes never leave the browser. The checkout redirect was tested without
-submitting a payment; returned-license behavior is covered by the production
-URL regression without creating a customer charge.
+- The factory `verify-url.sh` passed the custom HTTPS origin with no console or page errors.
+- Fresh 1440×1000 and 390×844 contexts showed the job and sample action before scrolling.
+- Both contexts entered `/demo`, showed the persistent label, and rendered all four report rows.
+- Demo save and reset left a real-history sentinel unchanged and removed the demo key.
+- Both contexts had zero horizontal overflow and zero serious or critical axe findings.
+- Keyboard focus began on **Skip to main content** with a 3 px blue outline and 4 px offset.
+- Reduced motion changed the measured transition duration to `0.01ms`.
+- `/privacy` and `/terms` returned HTTP 200 with correct titles and headings.
+- A random unknown path returned HTTP 404 with the designed not-found title and heading.
+- The browser reports the expected failed-document diagnostic for that deliberate 404 only.
+- The live normal path handled rating `0`, matching keywords, dates, and a flattened JPEG.
+- Empty, unsupported, and recovery paths produced clear messages, then completed normally.
+- The live report downloaded with source names, all checks, and the handoff checklist.
+- Free and demo flows made no cross-origin requests.
+- The live checkout endpoint returned HTTP 303 without submitting a payment.
+- Live hashed assets use `public, max-age=31536000, immutable`.
+- The live service worker uses `no-cache, must-revalidate`.
+
+Live Lighthouse 12.8.2 mobile results:
+
+- Performance: **100**
+- Accessibility: **100**
+- Best practices: **100**
+- SEO: **100**
+- FCP: **0.9 s**
+- LCP: **1.7 s**
+- TBT: **0 ms**
+- CLS: **0**
+
+Evidence is under `/work/.evidence/`, including browser JSON, screenshots, Lighthouse JSON, response headers, catalog copy, and billing metadata.
 
 ## Known limits
 
-- RAW develop recipes remain evidence rather than a promise that another
-  editor will interpret proprietary settings identically.
-- Metadata inspection is capped at the first 24 MB per file, and browser
-  preview support for HEIC/HEIF/TIFF varies by codec.
-- A future paid purchase should continue to be smoke-tested with its real
-  callback token after any billing-provider or API change; do not create a
-  charge merely for routine deploy verification.
+- No purchase was charged. Checkout availability, URL selection, token restore, and fixture verification were tested.
+- A proprietary RAW recipe remains evidence, not proof that another editor will render it identically.
+- Metadata inspection reads at most the first 24 MB of each file.
+- Browser preview support for HEIC, HEIF, and TIFF still depends on the installed codec.
+- The public offline promise covers a check that is already open. A first visit still needs a network.
+
+## Next steps
+
+- Use representative files from each target phone-to-desktop workflow during beta testing.
+- Measure whether photographers correctly predict the four field outcomes before a batch move.
+- Smoke-test one real returned license after any billing-provider or billing-API change.
